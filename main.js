@@ -77,14 +77,16 @@
       const dx = e.clientX - x0; x0 = null;
       if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
     });
-    // images that fail to load fall back to a designed cover
+    // ambient backdrop behind each award image; images that fail fall back to a designed cover
     $$('.rec__media img', rec).forEach((img) => {
+      img.closest('.rec__media').style.setProperty('--img', `url("${img.currentSrc || img.src}")`);
       const fail = () => {
         const fig = img.closest('.rec__media');
         const slide = img.closest('.rec__slide');
         const rank = slide.querySelector('.rec__rank span')?.textContent || '';
         const title = slide.querySelector('h3')?.textContent || '';
         fig.classList.add('rec__media--cover');
+        fig.style.removeProperty('--img');
         fig.innerHTML = `<div class="cover"><span class="cover__big">${String(slides.indexOf(slide) + 1).padStart(2, '0')}</span>` +
           `<span class="cover__label">${rank.toUpperCase()}</span><span class="cover__sub">${title.toUpperCase()}</span></div>`;
       };
