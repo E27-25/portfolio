@@ -92,6 +92,10 @@
       };
       if (img.complete && img.naturalWidth === 0) fail(); else img.addEventListener('error', fail, { once: true });
     });
+    $$('.rec__inset', rec).forEach((img) => {
+      const drop = () => img.remove();
+      if (img.complete && img.naturalWidth === 0) drop(); else img.addEventListener('error', drop, { once: true });
+    });
     show(0);
   }
 
