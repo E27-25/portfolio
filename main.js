@@ -78,7 +78,7 @@
       if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
     });
     // ambient backdrop behind each award image; images that fail fall back to a designed cover
-    $$('.rec__media img', rec).forEach((img) => {
+    $$('.rec__media > img:not(.rec__inset)', rec).forEach((img) => {
       img.closest('.rec__media').style.setProperty('--img', `url("${img.currentSrc || img.src}")`);
       const fail = () => {
         const fig = img.closest('.rec__media');

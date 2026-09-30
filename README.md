@@ -2,7 +2,9 @@
 
 Personal portfolio of **Watin Promfiy** (E27-25): AI Engineer · Data Scientist · Data Engineer.
 
-A static site (HTML, CSS, vanilla JS) with self-hosted fonts, deployed on Vercel.
+**Live: [watin-promfiy.vercel.app](https://watin-promfiy.vercel.app)**
+
+A static site (HTML, CSS, vanilla JS) with self-hosted fonts, deployed on [Vercel](https://vercel.com). Every push to `main` redeploys automatically.
 
 - `index.html` — all content
 - `styles.css` — industrial sci-fi UI (lilac-white panels, violet-black, lavender accent)
