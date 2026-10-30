@@ -282,7 +282,7 @@
       vel = 0; kick();
     };
     const openAt = (i) => openReader && openReader({
-      title: `${conf.code} ${conf.year} — ${conf.city}`, venue: 'FIELD LOG', label: 'PHOTO',
+      title: `${conf.code} ${conf.year} · ${conf.city}`, venue: 'FIELD LOG', label: 'PHOTO',
       images: conf.photos.map((p) => ({ src: p.src, w: p.w, h: p.h, cap: p.cap })), start: i, pdf: null,
     });
 
@@ -326,7 +326,7 @@
       if (e.target.closest('button')) return;
       dragging = true; moved = 0; lastX = e.clientX; vel = 0; target = null;
       stage.classList.add('is-drag');
-      stage.setPointerCapture(e.pointerId);
+      try { stage.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
       kick();
     });
     stage.addEventListener('pointermove', (e) => {
