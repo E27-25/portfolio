@@ -485,3 +485,26 @@ main{margin-left:var(--rail)}
   .reveal{opacity:1;transform:none}
   .scan{display:none}
 }
+
+/* ---- paper reader overlay */
+.reader{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--ink);overflow:hidden}
+.reader:not([open]){display:none}
+.reader[open]{display:flex;flex-direction:column;animation:readerIn .25s var(--ease)}
+.reader::backdrop{background:rgba(17,14,22,.82);backdrop-filter:blur(4px)}
+@keyframes readerIn{from{opacity:0}to{opacity:1}}
+.reader__bar{flex:none;display:flex;align-items:center;gap:14px;padding:12px var(--pad);background:var(--dark);color:#fff;border-bottom:3px solid var(--y)}
+.reader__meta{flex:1;min-width:0}
+.reader__venue{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--y)}
+.reader__meta h2{margin:2px 0 0;font-family:var(--body);font-weight:600;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reader__count{flex:none;font-family:var(--mono);font-size:12px;color:var(--dmute);letter-spacing:.1em}
+.reader__btn{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--dark);background:var(--y);border:0;cursor:pointer;text-decoration:none}
+.reader__btn svg{width:14px;height:14px}
+.reader__btn:hover{background:#fff}
+.reader__btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.reader__close{width:36px;justify-content:center;padding:0;font-size:15px;background:transparent;color:#fff;box-shadow:inset 0 0 0 1px var(--dline)}
+.reader__close:hover{background:var(--y);color:var(--dark)}
+.reader__pages{flex:1;overflow:auto;overscroll-behavior:contain;padding:24px 16px 48px;display:flex;flex-direction:column;align-items:center;gap:18px;outline:0}
+.reader__pages img{display:block;width:min(100%,880px);height:auto;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+html.reader-open{overflow:hidden}
+@media (max-width:640px){.reader__bar{gap:8px;padding:10px 12px}.reader__count{display:none}.reader__meta h2{font-size:13px}.reader__pages{padding:12px 8px 32px;gap:10px}}
+@media (prefers-reduced-motion:reduce){.reader[open]{animation:none}}

@@ -106,4 +106,48 @@
     btn.addEventListener('click', () => set(nav.hidden));
     $$('a', nav).forEach((a) => a.addEventListener('click', () => set(false)));
   }
+  /* ---- paper reader overlay */
+  const reader = $('.reader');
+  if (reader && reader.showModal) {
+    const pagesEl = $('[data-r-pages]', reader), countEl = $('[data-r-count]', reader);
+    let pageIO;
+    const open = (d) => {
+      $('[data-r-title]', reader).textContent = d.title;
+      $('[data-r-venue]', reader).textContent = d.venue;
+      $('[data-r-pdf]', reader).href = `papers/${d.reader}.pdf`;
+      const n = +d.pages;
+      countEl.textContent = `1 / ${n}`;
+      pagesEl.replaceChildren(...Array.from({ length: n }, (_, k) => {
+        const img = new Image();
+        img.src = `papers/${d.reader}/p${k + 1}.webp`;
+        img.loading = k < 2 ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        img.style.aspectRatio = d.ratio;
+        img.alt = `Page ${k + 1} of ${n}`;
+        img.dataset.page = k + 1;
+        return img;
+      }));
+      pageIO?.disconnect();
+      pageIO = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) countEl.textContent = `${e.target.dataset.page} / ${n}`;
+      }, { root: pagesEl, rootMargin: '-45% 0px -50% 0px' });
+      $$('img', pagesEl).forEach((img) => pageIO.observe(img));
+      document.documentElement.classList.add('reader-open');
+      reader.showModal();
+      pagesEl.scrollTop = 0;
+      pagesEl.focus({ preventScroll: true });
+    };
+    $$('[data-reader]').forEach((a) => a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      open(a.dataset);
+    }));
+    $('[data-r-close]', reader).addEventListener('click', () => reader.close());
+    reader.addEventListener('click', (e) => { if (e.target === reader) reader.close(); });
+    reader.addEventListener('close', () => {
+      document.documentElement.classList.remove('reader-open');
+      pageIO?.disconnect();
+      pagesEl.replaceChildren();
+    });
+  }
 })();
