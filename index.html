@@ -527,14 +527,22 @@
 </section>
 </main>
 
-<dialog class="reader" aria-labelledby="reader-title">
+<dialog class="reader" aria-labelledby="reader-title" aria-roledescription="document viewer">
   <div class="reader__bar">
     <div class="reader__meta"><span class="reader__venue" data-r-venue></span><h2 id="reader-title" data-r-title></h2></div>
-    <span class="reader__count" data-r-count aria-live="polite"></span>
     <a class="reader__btn" data-r-pdf href="#" target="_blank" rel="noopener">PDF <svg><use href="#i-dl"/></svg></a>
-    <button class="reader__btn reader__close" type="button" data-r-close aria-label="Close paper">✕</button>
+    <button class="reader__btn reader__close" type="button" data-r-close aria-label="Close">✕</button>
+    <span class="reader__progress" aria-hidden="true"><i data-r-progress></i></span>
   </div>
-  <div class="reader__pages" data-r-pages tabindex="0"></div>
+  <div class="reader__stage" data-r-stage tabindex="0" aria-live="polite"></div>
+  <button class="reader__side reader__side--prev" type="button" data-r-prev aria-label="Previous page"><svg><use href="#i-arrow"/></svg></button>
+  <button class="reader__side reader__side--next" type="button" data-r-next aria-label="Next page"><svg><use href="#i-arrow"/></svg></button>
+  <div class="reader__nav">
+    <button class="reader__btn reader__step" type="button" data-r-prev aria-label="Previous page"><svg><use href="#i-arrow"/></svg></button>
+    <p class="reader__count">PAGE <b data-r-cur>01</b> / <span data-r-total>01</span></p>
+    <button class="reader__btn reader__step" type="button" data-r-next aria-label="Next page"><svg><use href="#i-arrow"/></svg></button>
+    <button class="reader__btn reader__zoom" type="button" data-r-zoom aria-pressed="false">ZOOM</button>
+  </div>
 </dialog>
 <script src="main.js" defer></script>
 <script src="fx3d.js" defer></script>

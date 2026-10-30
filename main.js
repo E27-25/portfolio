@@ -107,50 +107,111 @@
     $$('a', nav).forEach((a) => a.addEventListener('click', () => set(false)));
   }
 
-  /* ---- paper reader overlay */
+  /* ---- paper / CV reader overlay: one page at a time with a slide-turn */
   const reader = $('.reader');
   if (reader && reader.showModal) {
-    const pagesEl = $('[data-r-pages]', reader), countEl = $('[data-r-count]', reader);
-    let pageIO;
+    const stage = $('[data-r-stage]', reader), zoomBtn = $('[data-r-zoom]', reader);
+    const curEl = $('[data-r-cur]', reader), totalEl = $('[data-r-total]', reader), bar = $('[data-r-progress]', reader);
+    const prevBtns = $$('[data-r-prev]', reader), nextBtns = $$('[data-r-next]', reader);
+    const pad = (n) => String(n).padStart(2, '0');
+    let pages = [], cur = 0;
+
+    const load = (k) => { const img = pages[k]?.querySelector('img'); if (img && !img.getAttribute('src')) img.src = img.dataset.src; };
+    const setZoom = (on) => {
+      reader.classList.toggle('is-zoom', on);
+      zoomBtn.setAttribute('aria-pressed', String(on));
+      if (pages[cur]) pages[cur].scrollTop = pages[cur].scrollLeft = 0;
+    };
+    const update = () => {
+      curEl.textContent = pad(cur + 1);
+      bar.style.width = `${((cur + 1) / pages.length) * 100}%`;
+      prevBtns.forEach((b) => { b.disabled = cur === 0; });
+      nextBtns.forEach((b) => { b.disabled = cur === pages.length - 1; });
+    };
+    const go = (n) => {
+      if (n < 0 || n >= pages.length || n === cur) return;
+      const fwd = n > cur, from = pages[cur], to = pages[n];
+      setZoom(false);
+      [n - 1, n, n + 1].forEach(load);
+      // place the incoming page on the side it comes from, then let it slide in
+      to.classList.add('snap'); to.classList.remove('is-enter', 'is-cur');
+      to.classList.toggle('out-l', !fwd);
+      void to.offsetWidth;
+      to.classList.remove('snap', 'out-l');
+      to.classList.add('is-cur');
+      from.classList.remove('is-cur', 'is-enter');
+      from.classList.toggle('out-l', fwd);
+      cur = n;
+      update();
+    };
+
     const open = (d) => {
+      const n = +d.pages, dir = d.dir || `papers/${d.reader}`;
+      const [w, h] = (d.ratio || '1100/1424').split('/').map(Number);
       $('[data-r-title]', reader).textContent = d.title;
       $('[data-r-venue]', reader).textContent = d.venue;
-      const dir = d.dir || `papers/${d.reader}`;
       $('[data-r-pdf]', reader).href = d.pdf || `papers/${d.reader}.pdf`;
-      const n = +d.pages;
-      countEl.textContent = `1 / ${n}`;
-      pagesEl.replaceChildren(...Array.from({ length: n }, (_, k) => {
-        const img = new Image();
-        img.src = `${dir}/p${k + 1}.webp`;
-        img.loading = k < 2 ? 'eager' : 'lazy';
+      totalEl.textContent = pad(n);
+      pages = Array.from({ length: n }, (_, k) => {
+        const fig = document.createElement('figure');
+        fig.className = 'reader__page';
+        const img = new Image(w, h);
+        img.dataset.src = `${dir}/p${k + 1}.webp`;
         img.decoding = 'async';
-        img.style.aspectRatio = d.ratio;
         img.alt = `Page ${k + 1} of ${n}`;
-        img.dataset.page = k + 1;
-        return img;
-      }));
-      pageIO?.disconnect();
-      pageIO = new IntersectionObserver((entries) => {
-        for (const e of entries) if (e.isIntersecting) countEl.textContent = `${e.target.dataset.page} / ${n}`;
-      }, { root: pagesEl, rootMargin: '-45% 0px -50% 0px' });
-      $$('img', pagesEl).forEach((img) => pageIO.observe(img));
+        img.draggable = false;
+        const cap = document.createElement('figcaption');
+        cap.innerHTML = `PAGE <b>${pad(k + 1)}</b> / ${pad(n)}`;
+        fig.append(img, cap);
+        return fig;
+      });
+      stage.replaceChildren(...pages);
+      cur = 0;
+      [0, 1].forEach(load);
+      pages[0].classList.add('is-cur', 'is-enter');
+      setZoom(false);
+      update();
       document.documentElement.classList.add('reader-open');
       reader.showModal();
-      pagesEl.scrollTop = 0;
-      pagesEl.focus({ preventScroll: true });
+      stage.focus({ preventScroll: true });
     };
+
     $$('[data-reader]').forEach((a) => a.addEventListener('click', (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
       e.preventDefault();
       open(a.dataset);
     }));
+    prevBtns.forEach((b) => b.addEventListener('click', () => go(cur - 1)));
+    nextBtns.forEach((b) => b.addEventListener('click', () => go(cur + 1)));
+    zoomBtn.addEventListener('click', () => setZoom(!reader.classList.contains('is-zoom')));
+    stage.addEventListener('click', (e) => { if (e.target.tagName === 'IMG') setZoom(!reader.classList.contains('is-zoom')); });
+    reader.addEventListener('keydown', (e) => {
+      if (e.target.closest('a, button') && (e.key === 'Enter' || e.key === ' ')) return;
+      const k = e.key;
+      if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && !reader.classList.contains('is-zoom'))) { e.preventDefault(); go(cur + 1); }
+      else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(cur - 1); }
+      else if (k === 'Home') { e.preventDefault(); go(0); }
+      else if (k === 'End') { e.preventDefault(); go(pages.length - 1); }
+    });
+
+    // swipe left / right (not while zoomed, where the page pans instead)
+    let sx = 0, sy = 0, tracking = false;
+    stage.addEventListener('pointerdown', (e) => { tracking = !reader.classList.contains('is-zoom'); sx = e.clientX; sy = e.clientY; });
+    stage.addEventListener('pointerup', (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+    });
+    stage.addEventListener('pointercancel', () => { tracking = false; });
+
     $('[data-r-close]', reader).addEventListener('click', () => reader.close());
     reader.addEventListener('click', (e) => { if (e.target === reader) reader.close(); });
     reader.addEventListener('close', () => {
       if (reader.open) return; // reopened before this event fired
       document.documentElement.classList.remove('reader-open');
-      pageIO?.disconnect();
-      pagesEl.replaceChildren();
+      stage.replaceChildren();
+      pages = [];
     });
   }
 })();
