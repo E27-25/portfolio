@@ -106,6 +106,7 @@
     btn.addEventListener('click', () => set(nav.hidden));
     $$('a', nav).forEach((a) => a.addEventListener('click', () => set(false)));
   }
+
   /* ---- paper reader overlay */
   const reader = $('.reader');
   if (reader && reader.showModal) {
@@ -114,12 +115,13 @@
     const open = (d) => {
       $('[data-r-title]', reader).textContent = d.title;
       $('[data-r-venue]', reader).textContent = d.venue;
-      $('[data-r-pdf]', reader).href = `papers/${d.reader}.pdf`;
+      const dir = d.dir || `papers/${d.reader}`;
+      $('[data-r-pdf]', reader).href = d.pdf || `papers/${d.reader}.pdf`;
       const n = +d.pages;
       countEl.textContent = `1 / ${n}`;
       pagesEl.replaceChildren(...Array.from({ length: n }, (_, k) => {
         const img = new Image();
-        img.src = `papers/${d.reader}/p${k + 1}.webp`;
+        img.src = `${dir}/p${k + 1}.webp`;
         img.loading = k < 2 ? 'eager' : 'lazy';
         img.decoding = 'async';
         img.style.aspectRatio = d.ratio;
@@ -145,6 +147,7 @@
     $('[data-r-close]', reader).addEventListener('click', () => reader.close());
     reader.addEventListener('click', (e) => { if (e.target === reader) reader.close(); });
     reader.addEventListener('close', () => {
+      if (reader.open) return; // reopened before this event fired
       document.documentElement.classList.remove('reader-open');
       pageIO?.disconnect();
       pagesEl.replaceChildren();
