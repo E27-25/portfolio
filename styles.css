@@ -701,7 +701,7 @@ html:not(.js) .mem__stage{min-height:0}
 .hm__grid i{display:block;aspect-ratio:1}
 .hm__legend{display:flex;align-items:center;gap:3px;justify-content:flex-end;margin:12px 0 0;font-family:var(--mono);font-size:10px;color:var(--dmute)}
 .hm__legend i{display:inline-block;width:11px;height:11px}
-.hm .l0,.hm__legend .l0{background:rgba(255,255,255,.06)}.l1{background:#3f3463}.l2{background:#6a54aa}.l3{background:#9a80e0}.l4{background:#ddd0ff}
+.hm i.l0,.hm__legend i.l0{background:rgba(255,255,255,.06)}.hm i.l1,.hm__legend i.l1{background:#3f3463}.hm i.l2,.hm__legend i.l2{background:#6a54aa}.hm i.l3,.hm__legend i.l3{background:#9a80e0}.hm i.l4,.hm__legend i.l4{background:#ddd0ff}
 .hm__grid .hm__pad{background:transparent}
 .langbar{display:flex;height:12px;gap:2px}
 .langbar i{display:block;height:100%}
