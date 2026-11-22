@@ -605,4 +605,10 @@
     }).catch(() => { /* keep the snapshot */ });
     const hm = $('.hm', gh); if (hm) hm.scrollLeft = hm.scrollWidth;
   }
+  /* ---- dragging a 3D object or a row must not start a text selection */
+  document.addEventListener('mousedown', (e) => {
+    if (e.button === 0 && e.target.closest('canvas, .fx, .hero__photo, .shelf__row, [data-tilt], .mem__stage')) {
+      if (!e.target.closest('a, button, input, textarea, video')) e.preventDefault();
+    }
+  });
 })();

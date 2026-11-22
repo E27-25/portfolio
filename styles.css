@@ -937,3 +937,7 @@ span.vbtn--line:hover{background:transparent;color:#fff;cursor:default}
   .term__bar span{font-size:10.5px}
 }
 @media (prefers-reduced-motion:reduce){.spark,.tdot{animation:none}}
+
+/* no accidental text selection while dragging 3D objects or rows */
+.hero__name,.hero__roles,.shelf__row,.fx{-webkit-user-select:none;user-select:none}
+.shelf__row img,.fx{-webkit-user-drag:none}
