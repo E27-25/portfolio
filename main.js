@@ -282,7 +282,7 @@
       vel = 0; kick();
     };
     const openAt = (i) => openReader && openReader({
-      title: `${conf.code} ${conf.year} · ${conf.city}`, venue: 'FIELD LOG', label: 'PHOTO',
+      title: `${conf.code} ${conf.year} · ${conf.city}`, venue: 'CONFERENCE TALK', label: 'PHOTO',
       images: conf.photos.map((p) => ({ src: p.src, w: p.w, h: p.h, cap: p.cap })), start: i, pdf: null,
     });
 
@@ -392,7 +392,7 @@
     const loadIn = (el) => el && $$('[data-src]', el).forEach((m) => { m.src = m.dataset.src; m.removeAttribute('data-src'); });
     const coll = {};
     $$('[data-open]').forEach((c) => { const [k] = c.dataset.open.split(':'); (coll[k] ||= []).push(c); });
-    const heads = { papers: ['// ARCHIVE', 'PAPERS · 2026'], projects: ['// DEPLOYMENTS', 'PROJECTS'] };
+    const heads = { papers: ['// PUBLICATIONS', 'PAPERS · 2026'], projects: ['// SELECTED WORK', 'PROJECTS'] };
     const track = $('[data-v-track]', viewer), stage = $('[data-v-stage]', viewer), strip = $('[data-v-strip]', viewer);
     const curEl = $('[data-v-cur]', viewer), totEl = $('[data-v-total]', viewer);
     const prev = $('[data-v-prev]', viewer), next = $('[data-v-next]', viewer);
