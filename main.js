@@ -361,23 +361,77 @@
       const max = row.scrollWidth - row.clientWidth - 2;
       btns.forEach((b) => { b.disabled = +b.dataset.scroll < 0 ? row.scrollLeft <= 2 : row.scrollLeft >= max; });
     };
-    btns.forEach((b) => b.addEventListener('click', () => row.scrollBy({ left: +b.dataset.scroll * row.clientWidth * 0.8, behavior: reduce ? 'auto' : 'smooth' })));
+    const step = () => (row.classList.contains('cf') ? (row.firstElementChild?.getBoundingClientRect().width || 300) : row.clientWidth * 0.8);
+    btns.forEach((b) => b.addEventListener('click', () => row.scrollBy({ left: +b.dataset.scroll * step(), behavior: reduce ? 'auto' : 'smooth' })));
     row.addEventListener('scroll', sync, { passive: true });
     addEventListener('resize', sync);
     sync();
   });
 
+  /* ---- 3D coverflow: cards turn toward the centre as the row scrolls; hover tilts */
+  $$('.cf').forEach((row) => {
+    const items = [...row.children];
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = row.getBoundingClientRect(), cx = r.left + r.width / 2;
+      items.forEach((it) => {
+        const b = it.getBoundingClientRect();
+        const c = Math.max(-3, Math.min(3, (b.left + b.width / 2 - cx) / b.width)), a = Math.abs(c);
+        it.style.setProperty('--cf-ry', `${(c * 34).toFixed(2)}deg`);
+        it.style.setProperty('--cf-tz', `${(-Math.min(a, 2) * 120).toFixed(1)}px`);
+        it.style.setProperty('--cf-s', (a < 0.5 ? 1.04 - a * 0.08 : 1 - Math.min(a, 2) * 0.04).toFixed(3));
+        it.style.setProperty('--cf-o', (1 - Math.max(0, a - 1.4) * 0.55).toFixed(2));
+        it.classList.toggle('is-center', a < 0.5);
+      });
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(update); };
+    row.addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    // start with a card in the middle so both sides are filled
+    const start = items[Math.min(+row.dataset.start || 0, items.length - 1)];
+    if (start) row.scrollLeft = start.offsetLeft + start.offsetWidth / 2 - row.clientWidth / 2;
+    update();
+    // drag to scroll with a mouse (touch and trackpads scroll natively)
+    let down = null;
+    row.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse' && e.button === 0) down = { x: e.clientX, sl: row.scrollLeft, moved: false }; });
+    addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - down.x;
+      if (Math.abs(dx) > 5) { down.moved = true; row.classList.add('is-dragging'); row.style.scrollSnapType = 'none'; row.scrollLeft = down.sl - dx; }
+    });
+    addEventListener('pointerup', () => {
+      if (!down) return;
+      const moved = down.moved; down = null;
+      row.classList.remove('is-dragging'); row.style.scrollSnapType = '';
+      if (moved) { const stop = (ev) => { ev.preventDefault(); ev.stopPropagation(); }; row.addEventListener('click', stop, { capture: true, once: true }); setTimeout(() => row.removeEventListener('click', stop, { capture: true }), 50); }
+    });
+    if (reduce) return;
+    items.forEach((it) => {
+      const card = $('.pj3__card, .pcard__in', it);
+      it.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || down?.moved) return;
+        const b = card.getBoundingClientRect();
+        const px = (e.clientX - b.left) / b.width - 0.5, py = (e.clientY - b.top) / b.height - 0.5;
+        it.style.setProperty('--ty', `${(px * 20).toFixed(2)}deg`);
+        it.style.setProperty('--tx', `${(-py * 14).toFixed(2)}deg`);
+        it.classList.add('is-hover');
+      });
+      it.addEventListener('pointerleave', () => { it.style.removeProperty('--ty'); it.style.removeProperty('--tx'); it.classList.remove('is-hover'); });
+    });
+  });
+
   /* ---- project cards with a demo video: play on hover */
-  $$('.proj[data-video]').forEach((card) => {
-    const cover = $('.proj__cover', card);
+  $$('.pj3[data-video]').forEach((card) => {
+    const cover = $('.pj3__shot .pj3__scr', card) || $('.pj3__shot', card);
     let v = null;
     card.addEventListener('mouseenter', () => {
       if (reduce) return;
       if (!v) {
         v = document.createElement('video');
         Object.assign(v, { src: card.dataset.video, muted: true, loop: true, playsInline: true, preload: 'auto' });
-        v.className = 'proj__video'; v.setAttribute('aria-hidden', 'true');
-        cover.prepend(v);
+        v.setAttribute('aria-hidden', 'true');
+        cover.append(v);
       }
       v.play().catch(() => {}); card.classList.add('is-vid');
     });
@@ -440,9 +494,9 @@
         b.type = 'button';
         const name = ($('h3', c)?.textContent || '').trim();
         b.setAttribute('aria-label', `Go to ${name}`);
-        const im = $('.pcard__cover > img, .proj__img', c);
+        const im = $('.pcard__cover > img, .proj__img, .pj3__shot img', c);
         if (im) { const t = new Image(); t.src = im.currentSrc || im.src; t.alt = ''; b.append(t); }
-        else { const g = document.createElement('span'); g.textContent = $('.proj__glyph', c)?.textContent || name[0] || '·'; b.append(g); }
+        else { const g = document.createElement('span'); g.textContent = ($('.pj3__logo', c)?.textContent || '').trim() || name[0] || '·'; b.append(g); }
         b.addEventListener('click', () => go(idx));
         return b;
       });
@@ -452,7 +506,7 @@
       requestAnimationFrame(() => { go(i, true); stage.focus({ preventScroll: true }); });
     };
     document.addEventListener('click', (e) => {
-      const hit = e.target.closest('.pcard__hit, .proj__hit');
+      const hit = e.target.closest('.pcard__hit, .proj__hit, .pj3__hit');
       if (!hit || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
       const card = hit.closest('[data-open]'); if (!card) return;
       const [k, i] = card.dataset.open.split(':');
