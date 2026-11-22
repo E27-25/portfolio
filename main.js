@@ -555,6 +555,26 @@
     track.addEventListener('pointercancel', endDrag);
   }
 
+  /* ---- GitHub neofetch terminal: type the command, then print the output */
+  const term = $('[data-term]');
+  if (term) {
+    const cmd = $('[data-cmd]', term), word = cmd.dataset.cmd;
+    const run = () => {
+      if (term.dataset.done) return;
+      term.dataset.done = '1';
+      if (reduce) { cmd.textContent = word; term.classList.add('is-run'); return; }
+      let k = 0;
+      const t = setInterval(() => {
+        cmd.textContent = word.slice(0, ++k);
+        if (k >= word.length) { clearInterval(t); setTimeout(() => term.classList.add('is-run'), 260); }
+      }, 95);
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { run(); io.disconnect(); } }, { threshold: 0.35 });
+      io.observe(term);
+    } else run();
+  }
+
   /* ---- GitHub overview: refresh live numbers (keeps the snapshot if the API is unreachable) */
   const gh = $('[data-gh-user]');
   if (gh && window.fetch) {

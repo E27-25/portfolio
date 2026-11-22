@@ -838,3 +838,57 @@ span.vbtn--line:hover{background:transparent;color:#fff;cursor:default}
 .pcard__status{top:auto;right:auto;left:10px;bottom:10px}
 .proj__links{flex-wrap:wrap;row-gap:10px}
 .proj__links a{white-space:nowrap}
+
+/* ---- GitHub: neofetch terminal + side stats */
+.gh__top{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:16px;margin:22px 0 16px}
+.gh__side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.gh__side .gh__stats{grid-template-columns:1fr 1fr;margin:0}
+.gh__side .gh__stats div:nth-child(2){border-right:0}
+.gh__side .gh__stats div:nth-child(-n+2){border-bottom:1px solid var(--dline)}
+.gh__side .gh__panel{flex:1}
+.gh__panel--hm{margin-bottom:0}
+.term{position:relative;display:block;overflow:hidden;color:#e9e4f4;text-decoration:none;border:1px solid var(--dline);
+  background:radial-gradient(rgba(255,255,255,.28) 1px,transparent 1.6px) 0 0/44px 44px,radial-gradient(rgba(var(--y-rgb),.35) 1px,transparent 1.6px) 22px 22px/44px 44px,linear-gradient(160deg,#2a2044,#140f20 65%);
+  box-shadow:0 30px 60px -30px rgba(0,0,0,.8);transition:border-color .3s}
+.term:hover{border-color:rgba(var(--y-rgb),.6)}
+.term__bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;background:rgba(0,0,0,.28);border-bottom:1px solid var(--dline);font-family:var(--mono);font-size:11px;color:var(--dmute)}
+.term__bar i{width:11px;height:11px;border-radius:50%;background:#f39bb5}
+.term__bar i:nth-child(2){background:#f5d36b}.term__bar i:nth-child(3){background:#8fe1a7}
+.term__bar span{margin:0 auto;padding-right:44px}
+.term__body{padding:18px 20px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.6}
+.term__line{margin:0;color:#e9e4f4}
+.term__line b{font-weight:500;color:#f2a7c3}
+.term__cmd{color:#f5d36b}
+.term__caret{display:inline-block;width:8px;height:15px;margin-left:2px;background:var(--y);vertical-align:-3px;animation:termBlink 1s steps(1) infinite}
+.term.is-run .term__caret{display:none}
+@keyframes termBlink{50%{opacity:0}}
+.term__out{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;margin-top:16px}
+.term__logo{margin:0;font-family:ui-monospace,Menlo,"DejaVu Sans Mono",monospace;font-size:10px;line-height:1.12;color:var(--y);text-shadow:0 0 8px rgba(var(--y-rgb),.35)}
+.term__since{margin:12px 0 0;font-size:10.5px;font-style:italic;color:var(--dmute)}
+.term__user{margin:0 0 6px;padding-bottom:6px;border-bottom:1px dashed rgba(255,255,255,.18);color:#f2a7c3}
+.term__user i{font-style:normal;color:#fff}
+.term__info dl{margin:0;display:grid;gap:0}
+.term__info dl div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px}
+.term__info dt{color:#f2a7c3}
+.term__info dl div:nth-child(5n+2) dt{color:#f6b38f}.term__info dl div:nth-child(5n+3) dt{color:var(--y)}.term__info dl div:nth-child(5n+4) dt{color:#9ec5ff}.term__info dl div:nth-child(5n) dt{color:#8fe1a7}
+.term__info dd{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.term__swatch{display:flex;margin:12px 0 0}
+.term__swatch i{width:26px;height:14px;background:#2a2140}
+.term__swatch i:nth-child(2){background:#f39bb5}.term__swatch i:nth-child(3){background:#8fe1a7}.term__swatch i:nth-child(4){background:#f5d36b}.term__swatch i:nth-child(5){background:#9ec5ff}.term__swatch i:nth-child(6){background:var(--y)}.term__swatch i:nth-child(7){background:var(--y2)}.term__swatch i:nth-child(8){background:#f4f1fa}
+.js .term .term__side,.js .term .term__user,.js .term .term__swatch{opacity:0;transition:opacity .5s}
+.js .term .term__info dl div{opacity:0;transform:translateX(-8px);transition:opacity .3s calc(var(--i) * 55ms),transform .3s calc(var(--i) * 55ms)}
+.js .term.is-run .term__side,.js .term.is-run .term__user,.js .term.is-run .term__swatch{opacity:1}
+.js .term.is-run .term__info dl div{opacity:1;transform:none}
+.proj__img{z-index:0}
+.proj__video{z-index:1}
+@media (max-width:980px){
+  .gh__top{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .term__body{padding:14px;font-size:11px}
+  .term__out{grid-template-columns:1fr;gap:12px}
+  .term__logo{font-size:8px}
+  .term__info dl div{grid-template-columns:74px minmax(0,1fr)}
+  .term__info dd{white-space:normal}
+  .term__bar span{padding-right:0;font-size:10px}
+}
