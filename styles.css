@@ -1270,3 +1270,5 @@ span.vbtn--line:hover{background:transparent;color:#fff;cursor:default}
 .cfnav--prev{left:max(4px,calc(50% - var(--cw) / 2 - 74px))}
 .cfnav--next{right:max(4px,calc(50% - var(--cw) / 2 - 74px))}
 @media (max-width:640px){.sc--hikari .plate{width:38%!important;left:31%!important;margin-top:-4%}.sc--hikari .ring9{width:60%!important;left:20%!important;top:18%!important}.sc--hikari .plabel{left:74%!important}}
+/* phones: viewer slides must not grow past the screen */
+@media (max-width:900px){.vs{grid-template-columns:minmax(0,1fr)}.vs>*{min-width:0}}
