@@ -1157,8 +1157,8 @@ span.vbtn--line:hover{background:transparent;color:#fff;cursor:default}
 .panel p{margin:0 0 6px;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:rgba(255,255,255,.55)}
 .panel svg{flex:1;min-height:0;width:100%}
 .panel--line path{fill:none;stroke:hsl(var(--h) 80% 78%);stroke-width:1.8;vector-effect:non-scaling-stroke}.panel--line .ar{fill:hsl(var(--h) 80% 70% / .2);stroke:none}
-.pb{flex:1;display:flex;align-items:flex-end;gap:6%}
-.pb i{flex:1;height:calc(var(--v) * 1%);border-radius:2px 2px 0 0;background:linear-gradient(180deg,hsl(var(--h) 80% 78%),hsl(var(--h) 50% 38%))}
+.dga-bars{flex:1;display:flex;align-items:flex-end;gap:6%}
+.dga-bars i{flex:1;height:calc(var(--v) * 1%);border-radius:2px 2px 0 0;background:linear-gradient(180deg,hsl(var(--h) 80% 78%),hsl(var(--h) 50% 38%))}
 .panel--donut svg{transform:rotate(-90deg)}.panel--donut circle{fill:none;stroke-width:6}
 .panel--donut .bg{stroke:rgba(255,255,255,.1)}.panel--donut .a{stroke:var(--y)}.panel--donut .b{stroke:#ff9ec7}
 /* Nemotron: a tilted crowd of synthetic people */
@@ -1235,3 +1235,38 @@ span.vbtn--line:hover{background:transparent;color:#fff;cursor:default}
   .sc-cap,.plabel{font-size:8px}.kvchip,.probe,.step,.schema,.code,.tiers span{font-size:9.5px}.step{padding:5px 8px}.kv b{font-size:8px}.msg p{font-size:10px}.bubble{font-size:11px}.sheet b{font-size:14px}
 }
 @media (max-width:640px){.sc{top:13%;height:39%}.pj3__head{top:54%}.pj3__tag{top:66%}}
+/* ---- projects: big left/right arrows that wrap around */
+.shelf--proj{--cw:min(700px,86vw)}
+.cfstage{position:relative}
+.cfnav{position:absolute;z-index:6;top:calc(58px + (var(--cw) - 28px) / 3.2);transform:translateY(-50%);display:grid;place-items:center;width:58px;height:58px;padding:0;border-radius:50%;
+  border:1px solid rgba(255,255,255,.22);background:rgba(20,15,32,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;cursor:pointer;
+  box-shadow:0 16px 34px -12px rgba(0,0,0,.85);transition:background .25s,color .25s,border-color .25s,transform .25s var(--ease)}
+.cfnav svg{width:20px;height:20px}
+.cfnav--prev svg{transform:rotate(180deg)}
+.cfnav--prev{left:max(4px,calc(50% - var(--cw) / 2 - 30px))}
+.cfnav--next{right:max(4px,calc(50% - var(--cw) / 2 - 30px))}
+.cfnav:hover,.cfnav:focus-visible{background:var(--y);color:var(--ink);border-color:var(--y);transform:translateY(-50%) scale(1.07)}
+.cfnav:active{transform:translateY(-50%) scale(.95)}
+.cfcount{margin:4px 0 0;text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--dmute)}
+.cfcount b{font-weight:500;color:#fff}
+@media (max-width:640px){.cfnav{top:calc(58px + (var(--cw) - 12px) * .625);width:46px;height:46px}.cfnav svg{width:17px;height:17px}}
+/* ---- GitHub block, one size down */
+.gh{padding:24px}
+.gh .gh__stats{margin:14px 0}
+.gh__stats div{padding:12px 16px}
+.gh__stats dd{font-size:36px}
+.term__bar{height:36px;font-size:11.5px}.term__bar i{width:11px;height:11px}
+.term__body{padding:20px 30px 22px;font-size:13px;line-height:1.55}
+.term__out{grid-template-columns:minmax(140px,200px) minmax(0,1fr);gap:30px;margin-top:14px}
+.term__side{padding-top:12px}
+.term__pix{width:min(160px,100%)}
+.term__since{margin-top:16px;font-size:11.5px}
+.term__user{margin-bottom:10px;font-size:13.5px}
+.term__info dl div{grid-template-columns:116px minmax(0,1fr)}
+.term__swatch{margin-top:16px}.term__swatch i{width:30px;height:15px}
+.term__line--end{margin-top:16px}
+.term__caret--end{width:9px;height:16px}
+@media (max-width:760px){.term__body{padding:16px 14px 18px;font-size:11.5px}.term__pix{width:120px}.term__info dl div{grid-template-columns:80px minmax(0,1fr)}.gh__stats dd{font-size:30px}}
+.cfnav--prev{left:max(4px,calc(50% - var(--cw) / 2 - 74px))}
+.cfnav--next{right:max(4px,calc(50% - var(--cw) / 2 - 74px))}
+@media (max-width:640px){.sc--hikari .plate{width:38%!important;left:31%!important;margin-top:-4%}.sc--hikari .ring9{width:60%!important;left:20%!important;top:18%!important}.sc--hikari .plabel{left:74%!important}}

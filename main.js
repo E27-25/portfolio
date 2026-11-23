@@ -362,7 +362,7 @@
       btns.forEach((b) => { b.disabled = +b.dataset.scroll < 0 ? row.scrollLeft <= 2 : row.scrollLeft >= max; });
     };
     const step = () => (row.classList.contains('cf') ? (row.firstElementChild?.getBoundingClientRect().width || 300) : row.clientWidth * 0.8);
-    btns.forEach((b) => b.addEventListener('click', () => row.scrollBy({ left: +b.dataset.scroll * step(), behavior: reduce ? 'auto' : 'smooth' })));
+    btns.forEach((b) => b.addEventListener('click', () => (row._cfgo ? row._cfgo(+b.dataset.scroll) : row.scrollBy({ left: +b.dataset.scroll * step(), behavior: reduce ? 'auto' : 'smooth' }))));
     row.addEventListener('scroll', sync, { passive: true });
     addEventListener('resize', sync);
     sync();
@@ -385,6 +385,33 @@
         it.classList.toggle('is-center', a < 0.5);
       });
     };
+    // step one card at a time, wrapping from the last back to the first (and the other way)
+    const nearest = () => {
+      const r = row.getBoundingClientRect(), cx = r.left + r.width / 2;
+      let best = 0, bd = Infinity;
+      items.forEach((it, k) => { const b = it.getBoundingClientRect(), d = Math.abs(b.left + b.width / 2 - cx); if (d < bd) { bd = d; best = k; } });
+      return best;
+    };
+    const goTo = (k) => {
+      const n = items.length, c = items[((k % n) + n) % n];
+      row.scrollTo({ left: c.offsetLeft + c.offsetWidth / 2 - row.clientWidth / 2, behavior: reduce ? 'auto' : 'smooth' });
+    };
+    row._cfgo = (dir) => goTo(nearest() + dir);
+    const stage = row.closest('.cfstage');
+    if (stage) {
+      $$('[data-cf]', stage).forEach((b) => b.addEventListener('click', () => row._cfgo(+b.dataset.cf)));
+      const count = $('.cfcount b', stage);
+      if (count) row.addEventListener('scroll', () => { count.textContent = String(nearest() + 1).padStart(2, '0'); }, { passive: true });
+    }
+    row.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); row._cfgo(e.key === 'ArrowRight' ? 1 : -1); }
+    });
+    // a side card comes to the front first; the front card opens
+    row.addEventListener('click', (e) => {
+      const it = e.target.closest('.cf > *');
+      if (!it || it.classList.contains('is-center') || e.target.closest('.pj3__meta')) return;
+      e.preventDefault(); e.stopPropagation(); goTo(items.indexOf(it));
+    }, true);
     const queue = () => { if (!raf) raf = requestAnimationFrame(update); };
     row.addEventListener('scroll', queue, { passive: true });
     addEventListener('resize', queue);
